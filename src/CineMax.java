@@ -1,4 +1,11 @@
+/**
+ * Classe principale dell'applicazione CineMax.
+ * Mostra un semplice menu iniziale all'avvio.
+ */
 public class CineMax{
+	/**
+	 * Punto di ingresso dell'applicazione CineMax.
+	 */
 	public static void main(String[]args){
 		System.out.println("Benvenuto! Cosa vuoi fare?");
 
