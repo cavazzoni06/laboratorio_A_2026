@@ -7,6 +7,6 @@ public class CineMax{
 		System.out.println("3. Procedi come guest");
 		System.out.println("4. Esci");
 		System.out.print("Inserisci la tua scelta: ");
-		
+		CIAOOOOOOOO
 	}
 }
