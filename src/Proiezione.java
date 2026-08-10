@@ -19,5 +19,81 @@ public class Proiezione{
 		this.etaMinima = etaMinima;
 		this.prezzoBiglietto = prezzoBiglietto;
 	}
+	public LocalDateTime getDataOra() {
+        return dataOra;
+    }
+
+    public void setDataOra(LocalDateTime dataOra) {
+        this.dataOra = dataOra;
+    }
+
+    public String getTitolo() {
+        return titolo;
+    }
+
+    public void setTitolo(String titolo) {
+        this.titolo = titolo;
+    }
+
+    public String getGenere() {
+        return genere;
+    }
+
+    public void setGenere(String genere) {
+        this.genere = genere;
+    }
+
+    public String getRegista() {
+        return regista;
+    }
+
+   public void setRegista(String regista) {
+       this.regista = regista;
+    }
+
+   public int getAnno() {
+       return anno;
+    }
+
+   public void setAnno(int anno) {
+      this.anno = anno;
+    }
+
+   public int getDurataMinuti() {
+      return durataMinuti;
+    }
+
+   public void setDurataMinuti(int durataMinuti) {
+      this.durataMinuti = durataMinuti;
+    }
+
+   public int getEtaMinima() {
+      return etaMinima;
+    }
+
+   public void setEtaMinima(int etaMinima) {
+      this.etaMinima = etaMinima;
+    }
+
+   public double getPrezzoBiglietto() {
+      return prezzoBiglietto;
+    }
+
+    public void setPrezzoBiglietto(double prezzoBiglietto) {
+      this.prezzoBiglietto = prezzoBiglietto;
+    }
+ @Override
+ publicb String toString(){
+	 return "Proiezione{"+
+		     "dataOra=" + dataOra +
+            ", titolo='" + titolo + '\'' +
+            ", genere='" + genere + '\'' +
+            ", regista='" + regista + '\'' +
+            ", anno=" + anno +
+            ", durataMinuti=" + durataMinuti +
+            ", etaMinima=" + etaMinima +
+            ", prezzoBiglietto=" + prezzoBiglietto +
+            '}';
+}
+}
 	
-}	
