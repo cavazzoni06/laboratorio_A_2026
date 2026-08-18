@@ -63,5 +63,22 @@ public class GestoreProiezioni  {
     }
     return risultati;
   }
+  public boolean aggiungiproiezione(Proiezione nuovaProiezione) {
+      LocalDateTime nuovaInizio = nuovaProiezione.getDataOra();
+      LocalDateTime nuovaFine = nuovaInizio.plusMinutes(
+             nuovaProiezione.getDurateMinuti()
+      );
+      for (Proiezione p : proiezione){
+          LocalDateTime inizio = p.getDataOra();
+          LocaleDateTime fine = inizio.plusMinutes(
+                 p.getDurataMinuti()
+          );
+        if (nuovaInizio.isBefore(fine) && nuovaFine.isAfter(inizio)) {
+           return false;
+        }
+      }
+    proiezione.add(nuovaProiezione);
+    return true;
+  }
   
 }
