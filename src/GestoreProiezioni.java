@@ -33,7 +33,8 @@ public class GestoreProiezioni  {
               int anno = Integer.parseInt(dati[4]);
               int durataMinuti = Integer.parseInt(dati[4]);
               int etaMinima = Integer.parseInt(dati[6]);
-
+              double prezzoBiglietto = double.parseDouble(dati[7]);
+         
               Proiezione proiezione = new proiezione(
                       dataOra,
                       titolo,
