@@ -2,20 +2,20 @@ import java.time.LocalDateTime;
 public class Proiezione{
 	private LocalDateTime dataOra;
 	private String titolo;
-	private String genre;
+	private String genere;
 	private String regista;
 	private int anno;
-	private int durateMinuti;
+	private int durataMinuti;
 	private int etaMinima;
     private double prezzoBiglietto;
 
-	public Proiezione(LocalDateTime dataOra, String titolo, String genere; String rigista, int anno, int durateMinuti, int etaMinima, double prezzoBiglietto) {
-		this.DataOra = dataOra;
+	public Proiezione(LocalDateTime dataOra, String titolo, String genere, String regista, int anno, int durataMinuti, int etaMinima, double prezzoBiglietto) {
+		this.dataOra = dataOra;
 		this.titolo = titolo;
 		this.genere = genere;
-		this.rigista = rigista;
+		this.regista = regista;
 		this.anno = anno;
-		this.durateMinuti = durataMinuti;
+		this.durataMinuti = durataMinuti;
 		this.etaMinima = etaMinima;
 		this.prezzoBiglietto = prezzoBiglietto;
 	}
@@ -83,7 +83,7 @@ public class Proiezione{
       this.prezzoBiglietto = prezzoBiglietto;
     }
  @Override
- publicb String toString(){
+ public String toString(){
 	 return "Proiezione{"+
 		     "dataOra=" + dataOra +
             ", titolo='" + titolo + '\'' +
