@@ -54,4 +54,14 @@ public class GestoreProiezioni  {
   public Lista<Proiezione> getProiezioni(){
        return proiezione;
   }
+  public List<proiezione> cercaProiezione(String titolo) {
+     Lista<Proiezione> risulatti = new ArrayList<>();
+    for (Proiezione p : proiezione) {
+        if (p.getTitolo().toLowerCase().contains(titolo.toLowerCase())){
+            risultati.add(p);
+        }
+    }
+    return risultati;
+  }
+  
 }
