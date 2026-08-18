@@ -31,7 +31,7 @@ public class GestoreProiezioni  {
               String regista = dati[3].replace("\"","");
 
               int anno = Integer.parseInt(dati[4]);
-              int durataMinuti = Integer.parseInt(dati[4]);
+              int durataMinuti = Integer.parseInt(dati[5]);
               int etaMinima = Integer.parseInt(dati[6]);
               double prezzoBiglietto = double.parseDouble(dati[7]);
          
