@@ -1,3 +1,5 @@
+package cinemax;
+
 import java.time.LocalDateTime;
 public class Proiezione{
 	private LocalDateTime dataOra;

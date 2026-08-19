@@ -1,3 +1,4 @@
+package cinemax;
 /**
  * Rappresenta un proiezionista del cinema.
  */

@@ -1,3 +1,5 @@
+package cinemax;
+
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.FileReader;
@@ -49,7 +51,7 @@ public class GestoreUtenti {
     }
     }
 
-    public List<Utente> leggiUtenti() {
+    public void leggiUtenti() {
         utenti = new ArrayList<>();
 
 		try (BufferedReader br = new BufferedReader(new FileReader("utenti.csv"))) {
@@ -86,16 +88,15 @@ public class GestoreUtenti {
 			e.printStackTrace();
 		}
 
-		return utenti;
     }
 
-    public boolean login(String username, String password) {
+    public Utente login(String username, String password) {
         for (Utente u : utenti) {
 			if (u.getUsername().equals(username) && u.getPassword().equals(password)) {
-				return true;
+				return u;
 			}
 		}
-		return false;
+		return null;
     }
 
     public boolean usernameEsistente(String username) {
