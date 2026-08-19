@@ -1,4 +1,4 @@
-package cinemax;
+
 /**
  * Rappresenta un cliente nel sistema di prenotazione cinema.
  */

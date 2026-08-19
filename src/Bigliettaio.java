@@ -1,4 +1,4 @@
-package cinemax;
+
 /**
  * Rappresenta il bigliettaio del cinema.
  */

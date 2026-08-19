@@ -1,10 +1,6 @@
-package cinemax;
+
 import java.util.List;
 import java.util.Scanner;
-
-import cinemax.GestorePrenotazioni;
-import cinemax.GestoreProiezioni;
-import cinemax.Prenotazione;
 
 import java.io;
 
@@ -49,8 +45,12 @@ public class CineMax {
 					String password = scanner.next();
 
 					utente = utenti.login(username, password);
-					if (utente != null) {
-						menu(utente, proiezioni, prenotazioni);
+					if (utente instanceof Cliente) {
+						menuCliente((Cliente) utente, proiezioni, prenotazioni);
+					} else if (utente instanceof Proiezionista) {
+						menuProiezionista((Proiezionista) utente, proiezioni, prenotazioni);
+					} else if (utente instanceof Bigliettaio) {
+						menuBigliettaio((Bigliettaio) utente, proiezioni, prenotazioni);
 					} else {
 						System.out.println("Username o password errati. Riprova.");
 					}
@@ -97,10 +97,18 @@ public class CineMax {
 					}
 					if (utenti.aggiungiUtente(utente)) {
 						System.out.println("Registrazione completata con successo!");
+
+						if (utente instanceof Cliente) {
+							menuCliente((Cliente) utente, proiezioni, prenotazioni);
+						} else if (utente instanceof Proiezionista) {
+							menuProiezionista((Proiezionista) utente, proiezioni, prenotazioni);
+						} else if (utente instanceof Bigliettaio) {
+							menuBigliettaio((Bigliettaio) utente, proiezioni, prenotazioni);
+						}
 					} else {
 						System.out.println("Errore durante la registrazione. Riprova.");
 					}
-					menu(utente, proiezioni, prenotazioni);
+					
 					break;
 				case 3:
 					// Logica per procedere come guest
@@ -134,7 +142,7 @@ public class CineMax {
 		} while (scelta != 4);
 	}
 
-	private static void menu(Cliente cliente, GestoreProiezioni proiezioni, GestorePrenotazioni prenotazioni) {
+	private static void menuCliente(Cliente cliente, GestoreProiezioni proiezioni, GestorePrenotazioni prenotazioni) {
 		// Logica del menu per il cliente
 		System.out.println("Benvenuto, " + cliente.getUsername() + "!");
 		do{
@@ -233,7 +241,7 @@ public class CineMax {
 		}
 	}while (scelta != 3);
 	}
-	private static void menu(Proiezionista proiezionista, GestoreProiezioni proiezioni, GestorePrenotazioni prenotazioni) {
+	private static void menuProiezionista(Proiezionista proiezionista, GestoreProiezioni proiezioni, GestorePrenotazioni prenotazioni) {
 		// Logica del menu per il proiezionista
 		System.out.println("Benvenuto, " + proiezionista.getUsername() + "!");
 		do{
@@ -290,7 +298,7 @@ public class CineMax {
 		}
 		while(scelta!=3);
 	}
-	private static void menu(Bigliettaio bigliettaio, GestoreProiezioni proiezioni, GestorePrenotazioni prenotazioni) {
+	private static void menuBigliettaio(Bigliettaio bigliettaio, GestoreProiezioni proiezioni, GestorePrenotazioni prenotazioni) {
 		// Logica del menu per il bigliettaio
 		System.out.println("Benvenuto, " + bigliettaio.getUsername() + "!");
 		do{

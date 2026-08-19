@@ -1,4 +1,4 @@
-package cinemax;
+
 /**
  * Rappresenta una prenotazione effettuata da un cliente
  * per una determinata proiezione cinematografica.

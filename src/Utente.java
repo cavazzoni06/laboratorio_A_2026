@@ -1,4 +1,4 @@
-package cinemax;
+
 /**
  * Rappresenta un utente generico del sistema di prenotazione cinema.
  * Le sottoclassi specificano il ruolo dell'utente, come cliente o proiezionista.
