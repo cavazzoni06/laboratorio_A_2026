@@ -1,13 +1,13 @@
-
+package cinemax;
 
 import java.io.BufferedReader;
 import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.List;
-import java.time.LocalDateTime;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Gestisce le prenotazioni del cinema.
@@ -15,29 +15,28 @@ import java.time.LocalDate;
  * Permette di creare, cercare, modificare ed eliminare prenotazioni,
  * controllare la disponibilità dei posti e gestire il salvataggio
  * e il caricamento delle prenotazioni da file.
- * Sede di Varese (VA)
- 766768 Cavazzoni Stella
- 760763 Haddaji Aziz
- 755773 Boubaker May Kamar
- 763711 Marzouki Siwar
  */
-
 public class GestorePrenotazioni {
-    private GestoreProiezioni gestoreProiezioni;
-    /** Elenco delle prenotazioni gestite. */
+
     private ArrayList<Prenotazione> prenotazioni;
+    private GestoreProiezioni gestoreProiezioni;
 
     /**
      * Crea un nuovo gestore delle prenotazioni.
+     *
+     * @param gestoreProiezioni gestore contenente le proiezioni disponibili
      */
- public GestorePrenotazioni(GestoreProiezioni gestoreProiezioni) {
-    this.prenotazioni = new ArrayList<>();
-    this.gestoreProiezioni = gestoreProiezioni;
-}
+    public GestorePrenotazioni(
+            GestoreProiezioni gestoreProiezioni) {
+
+        this.prenotazioni = new ArrayList<>();
+        this.gestoreProiezioni = gestoreProiezioni;
+    }
+
     /**
      * Restituisce tutte le prenotazioni.
      *
-     * @return lista delle prenotazioni
+     * @return copia della lista delle prenotazioni
      */
     public List<Prenotazione> getPrenotazioni() {
         return new ArrayList<>(prenotazioni);
@@ -46,123 +45,155 @@ public class GestorePrenotazioni {
     /**
      * Cerca una prenotazione tramite il suo codice.
      *
-     * @param codice codice della prenotazione da cercare
-     * @return la prenotazione trovata, oppure null se non esiste
+     * @param codice codice della prenotazione
+     * @return prenotazione trovata oppure null
      */
     public Prenotazione cercaPerCodice(String codice) {
+
         for (Prenotazione p : prenotazioni) {
+
             if (p.getCodice().equals(codice)) {
                 return p;
             }
         }
+
         return null;
     }
 
     /**
-     * Aggiunge una nuova prenotazione.
+     * Elimina una prenotazione.
      *
-     * @param prenotazione prenotazione da aggiungere
-     * @throws IllegalArgumentException se esiste già una prenotazione con lo stesso codice
-     */
-    public void aggiungiPrenotazione(Prenotazione prenotazione) {
-        if (cercaPerCodice(prenotazione.getCodice()) != null) {
-            throw new IllegalArgumentException("Esiste già una prenotazione con questo codice.");
-        }
-        prenotazioni.add(prenotazione);
-    }
-
-    /**
-     * Elimina una prenotazione tramite il suo codice.
-     *
-     * @param codice codice della prenotazione da eliminare
-     * @return true se la prenotazione è stata eliminata,
-     *         false se non esiste o se la data della proiezione
-     *         non consente l'eliminazione
+     * @param codice codice della prenotazione
+     * @return true se eliminata, false altrimenti
      */
     public boolean eliminaPrenotazione(String codice) {
-        Prenotazione prenotazione = cercaPerCodice(codice);
+
+        Prenotazione prenotazione =
+                cercaPerCodice(codice);
 
         if (prenotazione == null) {
             return false;
         }
 
-        LocalDate oggi = LocalDate.now();
-        if (!prenotazione.getProiezione().getDataOra().toLocalDate().isBefore(oggi)) {
+        LocalDateTime adesso =
+                LocalDateTime.now();
+
+        /*
+         * Non è possibile eliminare una prenotazione
+         * se la proiezione è già iniziata.
+         */
+        if (!prenotazione
+                .getProiezione()
+                .getDataOra()
+                .isAfter(adesso)) {
+
             return false;
         }
 
         prenotazioni.remove(prenotazione);
+
         return true;
     }
 
     /**
-     * Cerca tutte le prenotazioni effettuate da un cliente.
+     * Cerca tutte le prenotazioni di un cliente.
      *
      * @param usernameCliente username del cliente
-     * @return lista delle prenotazioni del cliente
+     * @return prenotazioni trovate
      */
-    public List<Prenotazione> cercaPerCliente(String usernameCliente) {
-        List<Prenotazione> risultato = new ArrayList<>();
+    public List<Prenotazione> cercaPerCliente(
+            String usernameCliente) {
+
+        List<Prenotazione> risultato =
+                new ArrayList<>();
+
         for (Prenotazione p : prenotazioni) {
-            if (p.getUsernameCliente().equals(usernameCliente)) {
+
+            if (p.getUsernameCliente()
+                    .equals(usernameCliente)) {
+
                 risultato.add(p);
             }
         }
+
         return risultato;
     }
- 
+
     /**
-     * Cerca le prenotazioni in base al titolo del film.
-     * La ricerca accetta anche una parte del titolo.
+     * Cerca le prenotazioni in base al titolo.
      *
-     * @param titolo titolo o parte del titolo del film
-     * @return lista delle prenotazioni trovate
+     * @param titolo titolo o parte del titolo
+     * @return prenotazioni trovate
      */
-    public List<Prenotazione> cercaPerTitolo(String titolo) {
-        List<Prenotazione> risultato = new ArrayList<>();
+    public List<Prenotazione> cercaPerTitolo(
+            String titolo) {
+
+        List<Prenotazione> risultato =
+                new ArrayList<>();
 
         for (Prenotazione p : prenotazioni) {
+
             if (p.getProiezione()
                     .getTitolo()
                     .toLowerCase()
                     .contains(titolo.toLowerCase())) {
+
                 risultato.add(p);
             }
         }
+
         return risultato;
     }
 
     /**
-     * Cerca le prenotazioni con proiezione compresa
-     * in un determinato intervallo di date.
+     * Cerca prenotazioni comprese in un intervallo.
      *
-     * @param inizio data e ora iniziale
-     * @param fine data e ora finale
-     * @return lista delle prenotazioni trovate
+     * @param inizio data iniziale
+     * @param fine data finale
+     * @return prenotazioni trovate
      */
-    public List<Prenotazione> cercaPerIntervallo(LocalDateTime inizio, LocalDateTime fine) {
-        List<Prenotazione> risultato = new ArrayList<>();
+    public List<Prenotazione> cercaPerIntervallo(
+            LocalDateTime inizio,
+            LocalDateTime fine) {
+
+        List<Prenotazione> risultato =
+                new ArrayList<>();
+
         for (Prenotazione p : prenotazioni) {
-            LocalDateTime data = p.getProiezione().getDataOra();
-            if (!data.isBefore(inizio) && !data.isAfter(fine)) {
+
+            LocalDateTime data =
+                    p.getProiezione().getDataOra();
+
+            if (!data.isBefore(inizio)
+                    && !data.isAfter(fine)) {
+
                 risultato.add(p);
             }
         }
+
         return risultato;
     }
 
     /**
      * Restituisce le prenotazioni relative alla data odierna.
      *
-     * @return lista delle prenotazioni di oggi
+     * @return prenotazioni di oggi
      */
     public List<Prenotazione> prenotazioniDiOggi() {
-        List<Prenotazione> risultato = new ArrayList<>();
-        LocalDate oggi = LocalDate.now();
+
+        List<Prenotazione> risultato =
+                new ArrayList<>();
+
+        LocalDate oggi =
+                LocalDate.now();
 
         for (Prenotazione p : prenotazioni) {
-            if (p.getProiezione().getDataOra()
-                    .toLocalDate().equals(oggi)) {
+
+            if (p.getProiezione()
+                    .getDataOra()
+                    .toLocalDate()
+                    .equals(oggi)) {
+
                 risultato.add(p);
             }
         }
@@ -171,33 +202,41 @@ public class GestorePrenotazioni {
     }
 
     /**
-     * Calcola il numero totale di posti già prenotati
+     * Calcola il numero totale di posti prenotati
      * per una determinata proiezione.
      *
-     * @param proiezione proiezione di cui calcolare i posti prenotati
-     * @return numero totale di posti già prenotati
+     * @param proiezione proiezione da controllare
+     * @return numero di posti prenotati
      */
-    public int calcolaPostiPrenotati(Proiezione proiezione) {
+    public int calcolaPostiPrenotati(
+            Proiezione proiezione) {
+
         int totale = 0;
+
         for (Prenotazione p : prenotazioni) {
-            if (p.getProiezione().getTitolo().equals(proiezione.getTitolo())
-                    && p.getProiezione().getDataOra().equals(proiezione.getDataOra())) {
-                totale += p.getNumeroBiglietti();
+
+            if (p.getProiezione() == proiezione) {
+
+                totale +=
+                        p.getNumeroBiglietti();
             }
         }
+
         return totale;
     }
 
     /**
-     * Genera automaticamente un codice univoco per una nuova prenotazione.
-     * Il codice ha il formato PREN-n, dove n è un numero progressivo.
+     * Genera un codice univoco.
      *
-     * @return codice univoco della nuova prenotazione
+     * @return codice nel formato PREN-n
      */
     private String generaCodice() {
+
         int numero = 1;
 
-        while (cercaPerCodice("PREN-" + numero) != null) {
+        while (cercaPerCodice(
+                "PREN-" + numero) != null) {
+
             numero++;
         }
 
@@ -205,184 +244,297 @@ public class GestorePrenotazioni {
     }
 
     /**
-     * Crea una nuova prenotazione per una determinata proiezione.
-     * Il codice della prenotazione viene generato automaticamente.
-     * La prenotazione viene creata solo se sono disponibili
-     * abbastanza posti.
+     * Crea una nuova prenotazione.
+     *
+     * Controlla il numero di biglietti,
+     * la data della proiezione e i posti disponibili.
      *
      * @param usernameCliente username del cliente
-     * @param proiezione proiezione da prenotare
-     * @param numeroBiglietti numero di biglietti richiesti
-     * @return la nuova prenotazione creata
-     * @throws IllegalArgumentException se il numero di biglietti
-     *         non è valido o se i posti disponibili non sono sufficienti
+     * @param proiezione proiezione scelta
+     * @param numeroBiglietti numero di biglietti
+     * @return prenotazione creata
      */
-    public Prenotazione creaPrenotazione(String usernameCliente, Proiezione proiezione,
+    public Prenotazione creaPrenotazione(
+            String usernameCliente,
+            Proiezione proiezione,
             int numeroBiglietti) {
-        String codice = generaCodice();
+
         if (numeroBiglietti <= 0) {
-            throw new IllegalArgumentException("Il numero di biglietti deve essere maggiore di zero.");
-        }
 
-        LocalDateTime adesso = LocalDateTime.now();
-        if (!proiezione.getDataOra().isAfter(adesso)) {
             throw new IllegalArgumentException(
-                    "Non è possibile prenotare una proiezione già iniziata.");
+                    "Il numero di biglietti deve essere maggiore di zero."
+            );
         }
 
-        int postiOccupati = calcolaPostiPrenotati(proiezione);
-        int postiDisponibili = 200 - postiOccupati;
+        if (proiezione == null) {
+
+            throw new IllegalArgumentException(
+                    "La proiezione non può essere null."
+            );
+        }
+
+        /*
+         * Non si può prenotare una proiezione
+         * che è già iniziata.
+         */
+        if (!proiezione
+                .getDataOra()
+                .isAfter(LocalDateTime.now())) {
+
+            throw new IllegalArgumentException(
+                    "Non è possibile prenotare una proiezione già iniziata."
+            );
+        }
+
+        int postiOccupati =
+                calcolaPostiPrenotati(proiezione);
+
+        int postiDisponibili =
+                200 - postiOccupati;
+
         if (numeroBiglietti > postiDisponibili) {
+
             throw new IllegalArgumentException(
-                    "Posti insufficienti. Disponibili: " + postiDisponibili);
+                    "Posti insufficienti. Disponibili: "
+                            + postiDisponibili
+            );
         }
 
-        Prenotazione nuovaPrenotazione = new Prenotazione(
-                codice, usernameCliente, proiezione, numeroBiglietti);
+        String codice =
+                generaCodice();
 
-        aggiungiPrenotazione(nuovaPrenotazione);
+        Prenotazione nuovaPrenotazione =
+                new Prenotazione(
+                        codice,
+                        usernameCliente,
+                        proiezione,
+                        numeroBiglietti
+                );
+
+        /*
+         * Non utilizziamo più aggiungiPrenotazione().
+         * La prenotazione viene inserita direttamente.
+         */
+        prenotazioni.add(nuovaPrenotazione);
+
         return nuovaPrenotazione;
     }
 
     /**
-     * Modifica la proiezione associata a una prenotazione.
-     * La modifica è consentita solo se la prenotazione esiste,
-     * se la vecchia e la nuova proiezione sono future
-     * e se nella nuova proiezione ci sono posti sufficienti.
+     * Modifica la data di una prenotazione.
      *
-     * @param codice codice della prenotazione da modificare
-     * @param nuovaProiezione nuova proiezione scelta
-     * @return true se la modifica è stata effettuata,
-     *         false altrimenti
-     */
-   public boolean modificaPrenotazione(String codice, LocalDateTime nuovaDataOra) {
-
-    Prenotazione prenotazione = cercaPerCodice(codice);
-
-    if (prenotazione == null) {
-        return false;
-    }
-
-    LocalDate oggi = LocalDate.now();
-
-    // La prenotazione attuale deve essere futura
-    if (!prenotazione.getProiezione()
-            .getDataOra()
-            .toLocalDate()
-            .isAfter(oggi)) {
-        return false;
-    }
-
-    // Anche la nuova data deve essere futura
-    if (!nuovaDataOra.toLocalDate().isAfter(oggi)) {
-        return false;
-    }
-
-    Proiezione nuovaProiezione = null;
-
-    // Cerca lo stesso film nella nuova data richiesta
-    for (Proiezione p : gestoreProiezioni.getProiezioni()) {
-
-        if (p.getTitolo().equalsIgnoreCase(
-                prenotazione.getProiezione().getTitolo())
-                && p.getDataOra().equals(nuovaDataOra)) {
-
-            nuovaProiezione = p;
-            break;
-        }
-    }
-
-    if (nuovaProiezione == null) {
-        return false;
-    }
-
-    int postiOccupati = calcolaPostiPrenotati(nuovaProiezione);
-    int postiDisponibili = 200 - postiOccupati;
-
-    if (prenotazione.getNumeroBiglietti() > postiDisponibili) {
-        return false;
-    }
-
-    prenotazione.setProiezione(nuovaProiezione);
-
-    return true;
-}
-
-    /**
-     * Salva tutte le prenotazioni su un file di testo.
+     * Il gestore cerca automaticamente una proiezione
+     * dello stesso film nella nuova data richiesta.
      *
-     * @param percorso percorso del file su cui salvare le prenotazioni
-     * @throws IOException se si verifica un errore durante la scrittura
+     * @param codice codice della prenotazione
+     * @param nuovaDataOra nuova data e ora
+     * @return true se modificata, false altrimenti
      */
-    public void salvaPrenotazioniSuFile(String percorso) throws IOException {
-        FileWriter writer = new FileWriter(percorso);
+    public boolean modificaPrenotazione(
+            String codice,
+            LocalDateTime nuovaDataOra) {
 
-        for (Prenotazione p : prenotazioni) {
-            writer.write(
-                    p.getCodice() + ";"
-                            + p.getUsernameCliente() + ";"
-                            + p.getProiezione().getDataOra() + ";"
-                            + p.getProiezione().getTitolo() + ";"
-                            + p.getNumeroBiglietti()
-                            + System.lineSeparator());
+        Prenotazione prenotazione =
+                cercaPerCodice(codice);
+
+        if (prenotazione == null) {
+            return false;
         }
 
-        writer.close();
-    }
+        LocalDateTime adesso =
+                LocalDateTime.now();
 
-    /**
-     * Carica le prenotazioni da un file di testo.
-     *
-     * Per ogni prenotazione letta cerca la proiezione corrispondente
-     * nella lista delle proiezioni disponibili, confrontando titolo e data.
-     * Le prenotazioni con codice già presente non vengono aggiunte nuovamente.
-     *
-     * @param percorso percorso del file da cui caricare le prenotazioni
-     * @param proiezioniDisponibili lista delle proiezioni disponibili
-     * @throws IOException se si verifica un errore durante la lettura del file
-     */
-    public void caricaPrenotazioniDaFile(String percorso,
-            List<Proiezione> proiezioniDisponibili) throws IOException {
-        BufferedReader reader = new BufferedReader(new FileReader(percorso));
-        String riga;
-        while ((riga = reader.readLine()) != null) {
-            String[] dati = riga.split(";");
+        /*
+         * La prenotazione originale
+         * deve essere ancora futura.
+         */
+        if (!prenotazione
+                .getProiezione()
+                .getDataOra()
+                .isAfter(adesso)) {
 
-            if (dati.length != 5) {
-                continue;
+            return false;
+        }
+
+        /*
+         * Anche la nuova data deve essere futura.
+         */
+        if (nuovaDataOra == null
+                || !nuovaDataOra.isAfter(adesso)) {
+
+            return false;
+        }
+
+        Proiezione nuovaProiezione = null;
+
+        /*
+         * Cerca lo stesso film nella nuova data.
+         */
+        for (Proiezione p :
+                gestoreProiezioni.getProiezioni()) {
+
+            if (p.getTitolo().equalsIgnoreCase(
+                    prenotazione
+                            .getProiezione()
+                            .getTitolo())
+
+                    && p.getDataOra()
+                            .equals(nuovaDataOra)) {
+
+                nuovaProiezione = p;
+                break;
             }
+        }
 
-            try {
-                String codice = dati[0];
-                String usernameCliente = dati[1];
-                LocalDateTime dataOra = LocalDateTime.parse(dati[2]);
-                String titolo = dati[3];
-                int numeroBiglietti = Integer.parseInt(dati[4]);
+        /*
+         * Nessuna proiezione trovata
+         * nella data richiesta.
+         */
+        if (nuovaProiezione == null) {
+            return false;
+        }
 
-                Proiezione proiezioneTrovata = null;
-                for (Proiezione p : proiezioniDisponibili) {
-                    if (p.getTitolo().equals(titolo)
-                            && p.getDataOra().equals(dataOra)) {
-                        proiezioneTrovata = p;
-                        break;
+        int postiOccupati =
+                calcolaPostiPrenotati(
+                        nuovaProiezione);
+
+        int postiDisponibili =
+                200 - postiOccupati;
+
+        if (prenotazione
+                .getNumeroBiglietti()
+                > postiDisponibili) {
+
+            return false;
+        }
+
+        prenotazione.setProiezione(
+                nuovaProiezione);
+
+        return true;
+    }
+
+    /**
+     * Salva le prenotazioni su file.
+     *
+     * @param percorso percorso del file
+     * @throws IOException in caso di errore
+     */
+    public void salvaPrenotazioniSuFile(
+            String percorso)
+            throws IOException {
+
+        try (FileWriter writer =
+                     new FileWriter(percorso)) {
+
+            for (Prenotazione p : prenotazioni) {
+
+                writer.write(
+                        p.getCodice() + ";" +
+                        p.getUsernameCliente() + ";" +
+                        p.getProiezione()
+                                .getDataOra() + ";" +
+                        p.getProiezione()
+                                .getTitolo() + ";" +
+                        p.getNumeroBiglietti() +
+                        System.lineSeparator()
+                );
+            }
+        }
+    }
+
+    /**
+     * Carica le prenotazioni da file.
+     *
+     * @param percorso percorso del file
+     * @param proiezioniDisponibili proiezioni disponibili
+     * @throws IOException in caso di errore
+     */
+    public void caricaPrenotazioniDaFile(
+            String percorso,
+            List<Proiezione> proiezioniDisponibili)
+            throws IOException {
+
+        try (BufferedReader reader =
+                     new BufferedReader(
+                             new FileReader(percorso))) {
+
+            String riga;
+
+            while ((riga = reader.readLine())
+                    != null) {
+
+                String[] dati =
+                        riga.split(";");
+
+                /*
+                 * Una riga valida deve avere
+                 * esattamente 5 campi.
+                 */
+                if (dati.length != 5) {
+                    continue;
+                }
+
+                try {
+
+                    String codice =
+                            dati[0];
+
+                    String usernameCliente =
+                            dati[1];
+
+                    LocalDateTime dataOra =
+                            LocalDateTime.parse(
+                                    dati[2]);
+
+                    String titolo =
+                            dati[3];
+
+                    int numeroBiglietti =
+                            Integer.parseInt(
+                                    dati[4]);
+
+                    Proiezione proiezioneTrovata =
+                            null;
+
+                    for (Proiezione p :
+                            proiezioniDisponibili) {
+
+                        if (p.getTitolo()
+                                .equals(titolo)
+
+                                && p.getDataOra()
+                                        .equals(dataOra)) {
+
+                            proiezioneTrovata = p;
+                            break;
+                        }
                     }
-                }
 
-                if (proiezioneTrovata != null
-                        && cercaPerCodice(codice) == null) {
-                    Prenotazione prenotazione = new Prenotazione(
-                            codice,
-                            usernameCliente,
-                            proiezioneTrovata,
-                            numeroBiglietti);
+                    if (proiezioneTrovata != null
+                            && cercaPerCodice(codice)
+                            == null) {
 
-                    prenotazioni.add(prenotazione);
+                        Prenotazione prenotazione =
+                                new Prenotazione(
+                                        codice,
+                                        usernameCliente,
+                                        proiezioneTrovata,
+                                        numeroBiglietti
+                                );
+
+                        prenotazioni.add(
+                                prenotazione);
+                    }
+
+                } catch (Exception e) {
+
+                    System.out.println(
+                            "Riga prenotazione non valida: "
+                                    + riga
+                    );
                 }
-            } catch (Exception e) {
-                System.out.println(
-                        "Riga non valida nel file prenotazioni: " + riga);
             }
         }
-        reader.close();
     }
 }
