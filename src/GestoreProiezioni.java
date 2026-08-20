@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -18,12 +19,6 @@ public class GestoreProiezioni {
         proiezioni = new ArrayList<>();
     }
 
-    /**
-     * Permette di collegare il gestore delle prenotazioni
-     * al gestore delle proiezioni.
-     *
-     * @param gestorePrenotazioni gestore delle prenotazioni
-     */
     public void setGestorePrenotazioni(
             GestorePrenotazioni gestorePrenotazioni) {
 
@@ -45,7 +40,7 @@ public class GestoreProiezioni {
 
             String riga;
 
-            // Salta l'intestazione del CSV
+            // Salta intestazione CSV
             reader.readLine();
 
             while ((riga = reader.readLine()) != null) {
@@ -58,13 +53,23 @@ public class GestoreProiezioni {
                                 formatter
                         );
 
-                String titolo = dati[1].replace("\"", "");
-                String genere = dati[2].replace("\"", "");
-                String regista = dati[3].replace("\"", "");
+                String titolo =
+                        dati[1].replace("\"", "");
 
-                int anno = Integer.parseInt(dati[4]);
-                int durataMinuti = Integer.parseInt(dati[5]);
-                int etaMinima = Integer.parseInt(dati[6]);
+                String genere =
+                        dati[2].replace("\"", "");
+
+                String regista =
+                        dati[3].replace("\"", "");
+
+                int anno =
+                        Integer.parseInt(dati[4]);
+
+                int durataMinuti =
+                        Integer.parseInt(dati[5]);
+
+                int etaMinima =
+                        Integer.parseInt(dati[6]);
 
                 double prezzoBiglietto =
                         Double.parseDouble(dati[7]);
@@ -82,6 +87,42 @@ public class GestoreProiezioni {
                         );
 
                 proiezioni.add(proiezione);
+            }
+        }
+    }
+
+    // =====================================================
+    // SALVA PROIEZIONI SU FILE
+    // =====================================================
+
+    public void salvaProiezioniSuFile(String percorso)
+            throws IOException {
+
+        DateTimeFormatter formatter =
+                DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
+
+        try (FileWriter writer =
+                     new FileWriter(percorso)) {
+
+            writer.write(
+                    "data_ora_proiezione,titolo_film,genere,regista,anno,"
+                            + "durata_minuti,eta_minima,prezzo_biglietto"
+                            + System.lineSeparator()
+            );
+
+            for (Proiezione p : proiezioni) {
+
+                writer.write(
+                        "\"" + p.getDataOra().format(formatter) + "\"," +
+                        "\"" + p.getTitolo() + "\"," +
+                        "\"" + p.getGenere() + "\"," +
+                        "\"" + p.getRegista() + "\"," +
+                        p.getAnno() + "," +
+                        p.getDurataMinuti() + "," +
+                        p.getEtaMinima() + "," +
+                        p.getPrezzoBiglietto() +
+                        System.lineSeparator()
+                );
             }
         }
     }
@@ -207,7 +248,8 @@ public class GestoreProiezioni {
     // VISUALIZZA PROIEZIONE
     // =====================================================
 
-    public void visualizzaProiezione(Proiezione p) {
+    public void visualizzaProiezione(
+            Proiezione p) {
 
         int postiTotali = 200;
 
@@ -307,7 +349,8 @@ public class GestoreProiezioni {
         if (gestorePrenotazioni != null) {
             postiPrenotati =
                     gestorePrenotazioni
-                            .calcolaPostiPrenotati(proiezione);
+                            .calcolaPostiPrenotati(
+                                    proiezione);
         }
 
         if (postiPrenotati > 0) {
@@ -386,21 +429,25 @@ public class GestoreProiezioni {
         if (gestorePrenotazioni != null) {
             postiPrenotati =
                     gestorePrenotazioni
-                            .calcolaPostiPrenotati(proiezione);
+                            .calcolaPostiPrenotati(
+                                    proiezione);
         }
 
         if (postiPrenotati > 0) {
             return false;
         }
 
-        return proiezioni.remove(proiezione);
+        return proiezioni.remove(
+                proiezione);
     }
 
     // =====================================================
     // GET GESTORE PRENOTAZIONI
     // =====================================================
 
-    public GestorePrenotazioni getGestorePrenotazioni() {
+    public GestorePrenotazioni
+            getGestorePrenotazioni() {
+
         return gestorePrenotazioni;
     }
 }
