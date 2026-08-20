@@ -1,4 +1,3 @@
-package cinemax;
 
 import java.util.ArrayList;
 import java.util.List;

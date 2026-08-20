@@ -3,6 +3,7 @@ import java.util.List;
 import java.util.Scanner;
 
 import java.io;
+import java.time.LocalDateTime;
 
 /**
  * Classe principale dell'applicazione CineMax.
@@ -16,11 +17,14 @@ public class CineMax {
 		Scanner scanner = new Scanner(System.in);
 		GestoreUtenti utenti = new GestoreUtenti();
 		GestoreProiezioni proiezioni = new GestoreProiezioni();
-		GestorePrenotazioni prenotazioni = new GestorePrenotazioni();
+		GestorePrenotazioni prenotazioni = new GestorePrenotazioni(proiezioni);
+		proiezioni.setGestorePrenotazioni(prenotazioni);
 		Utente utente=null;
 		
 		int scelta, s;
-		String ricerca = "";
+		String ricercaTitolo = "", ricercaGenere = "", username = "", password = "";
+		LocalDateTime ricercaDataInizio = null, ricercaDataFine = null;
+		double ricercaCostoMassimo = 0.0;
 
 		utenti.leggiUtenti();
 
@@ -40,9 +44,9 @@ public class CineMax {
 				case 1:
 					// Logica per il login
 					System.out.print("Login \nUsername:");
-					String username = scanner.next();
+					username = scanner.next();
 					System.out.print("Password:");
-					String password = scanner.next();
+					password = scanner.next();
 
 					utente = utenti.login(username, password);
 					if (utente instanceof Cliente) {
@@ -58,13 +62,13 @@ public class CineMax {
 				case 2:
 					// Logica per la registrazione
 					System.out.print("Registrazione \nUsername:");
-					String username = scanner.next();
+					username = scanner.next();
 					if (utenti.usernameEsistente(username)) {
 						System.out.println("Username già esistente. Riprova.");
 						break;
 					}
 					System.out.print("Password:");
-					String password = scanner.next();
+					password = scanner.next();
 					System.out.print("Nome:");
 					String nome = scanner.next();
 					System.out.print("Cognome:");
@@ -123,10 +127,18 @@ public class CineMax {
 					} while (s != 1 && s != 2);
 
 					if (s == 1) {
-						System.out.print("Inserire dati ricerca: ");
-						ricerca = scanner.next();
-						System.out.println("Risultati della ricerca per '" + ricerca + "':");
-						for (Proiezione p : proiezioni.cercaProiezione(ricerca)) {
+						System.out.println("Inserire dati ricerca: ");
+						System.out.print("Inserire titolo: ");
+						ricercaTitolo = scanner.next();
+						System.out.print("Inserire intervallo di date (YYYY-MM-DDTHH:MM): ");
+						ricercaDataInizio = LocalDateTime.parse(scanner.next());
+						ricercaDataFine = LocalDateTime.parse(scanner.next());
+						System.out.print("Inserire genere: ");
+						ricercaGenere = scanner.next();
+						System.out.print("Inserire costo massimo: ");
+						ricercaCostoMassimo = scanner.nextDouble();
+						System.out.println("Risultati della ricerca:");
+						for (Proiezione p : proiezioni.cercaProiezione(ricercaTitolo, ricercaGenere, ricercaDataInizio, ricercaDataFine, ricercaCostoMassimo)) {
 							proiezioni.visualizzaProiezione(p);
 						}
 					}
@@ -156,13 +168,22 @@ public class CineMax {
 		
 		switch(scelta) {
 			case 1:
-				System.out.print("Inserire dati ricerca: ");
-				String ricerca = scanner.next();
-				System.out.println("Risultati della ricerca per '" + ricerca + "':");
-				int i = 0;
-				for (Proiezione p : proiezioni.cercaProiezioni(ricerca)) {
+
+				System.out.println("Inserire dati ricerca: ");
+				System.out.print("Inserire titolo: ");
+				ricercaTitolo = scanner.next();
+				System.out.print("Inserire intervallo di date (YYYY-MM-DDTHH:MM): ");
+				ricercaDataInizio = LocalDateTime.parse(scanner.next());
+				ricercaDataFine = LocalDateTime.parse(scanner.next());
+				System.out.print("Inserire genere: ");
+				ricercaGenere = scanner.next();
+				System.out.print("Inserire costo massimo: ");
+				ricercaCostoMassimo = scanner.nextDouble();
+				System.out.println("Risultati della ricerca");
+				int i=0;
+				for (Proiezione p : proiezioni.cercaProiezione(ricercaTitolo, ricercaGenere, ricercaDataInizio, ricercaDataFine, ricercaCostoMassimo)) {
 					System.out.println("Proiezione " + (++i) + ":");
-					p.visualizzaProiezione();
+					proiezioni.visualizzaProiezione(p);
 				}
 
 				if(i>0){
@@ -211,11 +232,11 @@ public class CineMax {
 							System.out.println(prenotazioni.cercaPerCodice(codicePrenotazione).toString());
 							System.out.print("Inserire la nuova data: ");
 							String nuovaData = scanner.next();
-							/*if(modificaPrenotazione(codicePrenotazione, nuovaData)) {
+							if(modificaPrenotazione(codicePrenotazione, nuovaData)) {
 							System.out.println("Prenotazione modificata con successo!");
 						} else {
 							System.out.println("Errore durante la modifica della prenotazione. Riprova.");
-						}*/
+						}
 						break;
 						case 2:
 							System.out.print("Inserire il codice della prenotazione da cancellare: ");
@@ -285,9 +306,36 @@ public class CineMax {
 					}
 					break;
 				case 3:
-
+					Proiezione modificata = proiezioni.scegliProiezione();
+					System.out.print("Inserire titolo: ");
+					String titolo = scanner.next();
+					System.out.print("Inserire data e ora (YYYY-MM-DDTHH:MM): ");
+					LocalDateTime dataOra = LocalDateTime.parse(scanner.next());
+					System.out.print("Inserire genere: ");
+					String genere = scanner.next();
+					System.out.print("Inserire regista: ");
+					String regista = scanner.next();
+					System.out.print("Inserire anno: ");
+					int anno = scanner.nextInt();
+					System.out.print("Inserire durata in minuti: ");
+					int durataMinuti = scanner.nextInt();
+					System.out.print("Inserire età minima: ");
+					int etaMinima = scanner.nextInt();
+					System.out.print("Inserire prezzo del biglietto: ");
+					double prezzoBiglietto = scanner.nextDouble();
+					Proiezione nuova=new Proiezione(dataOra, titolo, genere, regista, anno, durataMinuti, etaMinima, prezzoBiglietto);
+					if(proiezioni.modificaProiezione(modificata, nuova)) {
+						System.out.println("Proiezione modificata con successo!");
+					} else {
+						System.out.println("Errore durante la modifica della proiezione. Riprova.");
+					}
 					break;
 				case 4:
+					if(proiezioni.eliminaProiezione(proiezioni.scegliProiezione())) {
+						System.out.println("Proiezione cancellata con successo!");
+					} else {
+						System.out.println("Errore durante la cancellazione della proiezione. Riprova.");
+					}
 					break;
 				case 5:
 					System.out.println("Logout effettuato. Arrivederci, " + proiezionista.getUsername() + "!");
