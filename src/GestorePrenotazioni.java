@@ -23,17 +23,17 @@ import java.time.LocalDate;
  */
 
 public class GestorePrenotazioni {
-
+    private GestoreProiezioni gestoreProiezioni;
     /** Elenco delle prenotazioni gestite. */
     private ArrayList<Prenotazione> prenotazioni;
 
     /**
      * Crea un nuovo gestore delle prenotazioni.
      */
-    public GestorePrenotazioni() {
-        prenotazioni = new ArrayList<>();
-    }
-
+ public GestorePrenotazioni(GestoreProiezioni gestoreProiezioni) {
+    this.prenotazioni = new ArrayList<>();
+    this.gestoreProiezioni = gestoreProiezioni;
+}
     /**
      * Restituisce tutte le prenotazioni.
      *
@@ -255,35 +255,58 @@ public class GestorePrenotazioni {
      * @return true se la modifica è stata effettuata,
      *         false altrimenti
      */
-    public boolean modificaPrenotazione(String codice, Proiezione nuovaProiezione) {
-        Prenotazione prenotazione = cercaPerCodice(codice);
+   public boolean modificaPrenotazione(String codice, LocalDateTime nuovaDataOra) {
 
-        if (prenotazione == null) {
-            return false;
-        }
-        if (!prenotazione.getProiezione().getTitolo()
-                .equalsIgnoreCase(nuovaProiezione.getTitolo())) {
-            return false;
-        }
+    Prenotazione prenotazione = cercaPerCodice(codice);
 
-        LocalDate oggi = LocalDate.now();
-        if (!prenotazione.getProiezione().getDataOra()
-                .toLocalDate().isAfter(oggi)) {
-            return false;
-        }
-        if (!nuovaProiezione.getDataOra().toLocalDate().isAfter(oggi)) {
-            return false;
-        }
-
-        int postiOccupati = calcolaPostiPrenotati(nuovaProiezione);
-        int postiDisponibili = 200 - postiOccupati;
-        if (prenotazione.getNumeroBiglietti() > postiDisponibili) {
-            return false;
-        }
-
-        prenotazione.setProiezione(nuovaProiezione);
-        return true;
+    if (prenotazione == null) {
+        return false;
     }
+
+    LocalDate oggi = LocalDate.now();
+
+    // La prenotazione attuale deve essere futura
+    if (!prenotazione.getProiezione()
+            .getDataOra()
+            .toLocalDate()
+            .isAfter(oggi)) {
+        return false;
+    }
+
+    // Anche la nuova data deve essere futura
+    if (!nuovaDataOra.toLocalDate().isAfter(oggi)) {
+        return false;
+    }
+
+    Proiezione nuovaProiezione = null;
+
+    // Cerca lo stesso film nella nuova data richiesta
+    for (Proiezione p : gestoreProiezioni.getProiezioni()) {
+
+        if (p.getTitolo().equalsIgnoreCase(
+                prenotazione.getProiezione().getTitolo())
+                && p.getDataOra().equals(nuovaDataOra)) {
+
+            nuovaProiezione = p;
+            break;
+        }
+    }
+
+    if (nuovaProiezione == null) {
+        return false;
+    }
+
+    int postiOccupati = calcolaPostiPrenotati(nuovaProiezione);
+    int postiDisponibili = 200 - postiOccupati;
+
+    if (prenotazione.getNumeroBiglietti() > postiDisponibili) {
+        return false;
+    }
+
+    prenotazione.setProiezione(nuovaProiezione);
+
+    return true;
+}
 
     /**
      * Salva tutte le prenotazioni su un file di testo.
