@@ -2,6 +2,7 @@ package cinemax;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Scanner;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,7 +19,12 @@ public class GestoreProiezioni {
         gestorePrenotazioni = new GestorePrenotazioni();
     }
 
-    public void caricaProiezioniDaFile(String percorso) throws IOException {
+    // =====================================================
+    // CARICA PROIEZIONI DA FILE
+    // =====================================================
+
+    public void caricaProiezioniDaFile(String percorso)
+            throws IOException {
 
         DateTimeFormatter formatter =
                 DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
@@ -50,24 +56,63 @@ public class GestoreProiezioni {
                 double prezzoBiglietto =
                         Double.parseDouble(dati[7]);
 
-                Proiezione proiezione = new Proiezione(
-                        dataOra,
-                        titolo,
-                        genere,
-                        regista,
-                        anno,
-                        durataMinuti,
-                        etaMinima,
-                        prezzoBiglietto
-                );
+                Proiezione proiezione =
+                        new Proiezione(
+                                dataOra,
+                                titolo,
+                                genere,
+                                regista,
+                                anno,
+                                durataMinuti,
+                                etaMinima,
+                                prezzoBiglietto
+                        );
 
                 proiezioni.add(proiezione);
             }
         }
     }
 
+    // =====================================================
+    // GET PROIEZIONI
+    // =====================================================
+
     public List<Proiezione> getProiezioni() {
         return proiezioni;
+    }
+
+    // =====================================================
+    // SCEGLI PROIEZIONE
+    // =====================================================
+
+    public Proiezione scegliProiezione() {
+
+        Scanner scanner = new Scanner(System.in);
+
+        System.out.println(
+                "Scegli la proiezione da modificare:"
+        );
+
+        for (int i = 0; i < proiezioni.size(); i++) {
+
+            System.out.println(
+                    (i + 1)
+                    + " - "
+                    + proiezioni.get(i).getTitolo()
+                    + " - "
+                    + proiezioni.get(i).getDataOra()
+            );
+        }
+
+        int scelta = scanner.nextInt();
+
+        if (scelta < 1 ||
+                scelta > proiezioni.size()) {
+
+            return null;
+        }
+
+        return proiezioni.get(scelta - 1);
     }
 
     // =====================================================
@@ -81,40 +126,58 @@ public class GestoreProiezioni {
             LocalDateTime dataFine,
             Double costoMassimo) {
 
-        List<Proiezione> risultati = new ArrayList<>();
+        List<Proiezione> risultati =
+                new ArrayList<>();
 
         for (Proiezione p : proiezioni) {
 
             boolean trovato = true;
 
-            if (titolo != null && !titolo.isEmpty()) {
-                if (!p.getTitolo().toLowerCase()
-                        .contains(titolo.toLowerCase())) {
+            if (titolo != null &&
+                    !titolo.isEmpty()) {
+
+                if (!p.getTitolo()
+                        .toLowerCase()
+                        .contains(
+                                titolo.toLowerCase())) {
+
                     trovato = false;
                 }
             }
 
-            if (genere != null && !genere.isEmpty()) {
+            if (genere != null &&
+                    !genere.isEmpty()) {
+
                 if (!p.getGenere()
                         .equalsIgnoreCase(genere)) {
+
                     trovato = false;
                 }
             }
 
             if (dataInizio != null) {
-                if (p.getDataOra().isBefore(dataInizio)) {
+
+                if (p.getDataOra()
+                        .isBefore(dataInizio)) {
+
                     trovato = false;
                 }
             }
 
             if (dataFine != null) {
-                if (p.getDataOra().isAfter(dataFine)) {
+
+                if (p.getDataOra()
+                        .isAfter(dataFine)) {
+
                     trovato = false;
                 }
             }
 
             if (costoMassimo != null) {
-                if (p.getPrezzoBiglietto() > costoMassimo) {
+
+                if (p.getPrezzoBiglietto()
+                        > costoMassimo) {
+
                     trovato = false;
                 }
             }
@@ -131,7 +194,8 @@ public class GestoreProiezioni {
     // VISUALIZZA PROIEZIONE
     // =====================================================
 
-    public void visualizzaProiezione(Proiezione p) {
+    public void visualizzaProiezione(
+            Proiezione p) {
 
         int postiTotali = 200;
 
@@ -142,18 +206,37 @@ public class GestoreProiezioni {
         int postiLiberi =
                 postiTotali - postiPrenotati;
 
-        System.out.println("Titolo: " + p.getTitolo());
-        System.out.println("Genere: " + p.getGenere());
-        System.out.println("Regista: " + p.getRegista());
-        System.out.println("Anno: " + p.getAnno());
-        System.out.println("Data/Ora: " + p.getDataOra());
-        System.out.println("Durata: "
-                + p.getDurataMinuti() + " minuti");
-        System.out.println("Età minima: "
+        System.out.println(
+                "Titolo: " + p.getTitolo());
+
+        System.out.println(
+                "Genere: " + p.getGenere());
+
+        System.out.println(
+                "Regista: " + p.getRegista());
+
+        System.out.println(
+                "Anno: " + p.getAnno());
+
+        System.out.println(
+                "Data/Ora: " + p.getDataOra());
+
+        System.out.println(
+                "Durata: "
+                + p.getDurataMinuti()
+                + " minuti");
+
+        System.out.println(
+                "Età minima: "
                 + p.getEtaMinima());
-        System.out.println("Costo: "
-                + p.getPrezzoBiglietto() + " €");
-        System.out.println("Posti liberi: "
+
+        System.out.println(
+                "Costo: "
+                + p.getPrezzoBiglietto()
+                + " €");
+
+        System.out.println(
+                "Posti liberi: "
                 + postiLiberi);
     }
 
@@ -169,7 +252,8 @@ public class GestoreProiezioni {
 
         LocalDateTime nuovaFine =
                 nuovaInizio.plusMinutes(
-                        nuovaProiezione.getDurataMinuti()
+                        nuovaProiezione
+                                .getDurataMinuti()
                 );
 
         for (Proiezione p : proiezioni) {
@@ -189,7 +273,8 @@ public class GestoreProiezioni {
             }
         }
 
-        proiezioni.add(nuovaProiezione);
+        proiezioni.add(
+                nuovaProiezione);
 
         return true;
     }
@@ -204,7 +289,8 @@ public class GestoreProiezioni {
 
         int postiPrenotati =
                 gestorePrenotazioni
-                        .calcolaPostiPrenotati(proiezione);
+                        .calcolaPostiPrenotati(
+                                proiezione);
 
         if (postiPrenotati > 0) {
             return false;
@@ -215,7 +301,8 @@ public class GestoreProiezioni {
 
         LocalDateTime nuovaFine =
                 nuovoInizio.plusMinutes(
-                        nuovaProiezione.getDurataMinuti()
+                        nuovaProiezione
+                                .getDurataMinuti()
                 );
 
         for (Proiezione p : proiezioni) {
@@ -255,13 +342,16 @@ public class GestoreProiezioni {
                 nuovaProiezione.getAnno());
 
         proiezione.setDurataMinuti(
-                nuovaProiezione.getDurataMinuti());
+                nuovaProiezione
+                        .getDurataMinuti());
 
         proiezione.setEtaMinima(
-                nuovaProiezione.getEtaMinima());
+                nuovaProiezione
+                        .getEtaMinima());
 
         proiezione.setPrezzoBiglietto(
-                nuovaProiezione.getPrezzoBiglietto());
+                nuovaProiezione
+                        .getPrezzoBiglietto());
 
         return true;
     }
@@ -275,20 +365,24 @@ public class GestoreProiezioni {
 
         int postiPrenotati =
                 gestorePrenotazioni
-                        .calcolaPostiPrenotati(proiezione);
+                        .calcolaPostiPrenotati(
+                                proiezione);
 
         if (postiPrenotati > 0) {
             return false;
         }
 
-        return proiezioni.remove(proiezione);
+        return proiezioni.remove(
+                proiezione);
     }
 
     // =====================================================
     // GET GESTORE PRENOTAZIONI
     // =====================================================
 
-    public GestorePrenotazioni getGestorePrenotazioni() {
+    public GestorePrenotazioni
+            getGestorePrenotazioni() {
+
         return gestorePrenotazioni;
     }
 }
