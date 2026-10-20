@@ -73,8 +73,26 @@ public class CineMax {
 					String nome = scanner.next();
 					System.out.print("Cognome:");
 					String cognome = scanner.next();
-					System.out.print("Data di nascita (YYYY-MM-DD):");
-					String dataNascita = scanner.next();
+					String dataNascita;
+                    boolean valida = false;
+					do {
+						System.out.print("Data di nascita (DD/MM/YYYY): ");
+						dataNascita = scanner.next();
+					    try {
+						    java.time.LocalDate.parse(
+						         dataNascita,
+						         java.time.format.DateTimeFormatter
+							         .ofPattern("dd/MM/uuuu")
+							         .withResolverStyle(
+                                         java.time.format.ResolverStyle.STRICT
+				             );
+							valida = true;
+						} catch (java.time.DateTimeException e) {
+							System.out.println(
+								"Data non valida! Inserisci una data corretta."
+							);
+						}
+					} while (!valida);
 					System.out.print("Domicilio:");
 					String domicilio = scanner.next();
 					System.out.print("Ruolo (1 per Cliente, 2 per Proiezionista, 3 per Bigliettaio):");
